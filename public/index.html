@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PT 保活工具</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>PT 自动保活</h1>
+      <p>每日自动登录保活，支持多站点</p>
+    </header>
+
+    <main class="home-content">
+      <div class="menu-grid">
+        <a href="status.html" class="menu-card">
+          <div class="menu-icon">📊</div>
+          <h3>站点登录状态</h3>
+          <p>查看各站点登录状态，手动触发登录</p>
+        </a>
+        <a href="config.html" class="menu-card">
+          <div class="menu-icon">⚙️</div>
+          <h3>配置管理</h3>
+          <p>管理站点配置和代理设置</p>
+        </a>
+        <a href="sites.html" class="menu-card">
+          <div class="menu-icon">🌐</div>
+          <h3>站点管理</h3>
+          <p>新增/删除/导入站点配置</p>
+        </a>
+        <a href="upgrade.html" class="menu-card">
+          <div class="menu-icon">🐳</div>
+          <h3>镜像升级</h3>
+          <p>Watchtower 发现的可升级镜像，人工确认升级</p>
+        </a>
+      </div>
+    </main>
+
+    <footer>
+      <p>守护剑士团 PT 保活工具</p>
+      <p class="version-line" id="version-line"></p>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      fetch('/api/version').then(function (r) { return r.json(); }).then(function (j) {
+        var el = document.getElementById('version-line');
+        if (!el) return;
+        var v = (j && j.version) ? j.version : '';
+        el.textContent = v ? ('版本：' + v) : '';
+      }).catch(function () {});
+    })();
+  </script>
+</body>
+</html>

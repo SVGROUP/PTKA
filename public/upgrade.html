@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>镜像升级 - PT 保活工具</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Docker 镜像升级</h1>
+      <p>Watchtower 检测到的可升级镜像，人工确认后触发升级</p>
+      <div class="header-nav">
+        <a href="index.html" class="nav-link">← 返回首页</a>
+      </div>
+    </header>
+
+    <main>
+      <div class="check-cmd-box">
+        <div class="check-cmd-head">
+          <span class="check-cmd-title">🛠️ 部署升级容器（一次性）</span>
+          <button class="btn-refresh" id="copy-trigger">复制</button>
+        </div>
+        <p class="check-cmd-hint">起一个常驻 watchtower-trigger：只等本页面点「升级」时才动手，不自动扫描（镜像检测由群晖上的自建巡检脚本负责推回本页面）。复制到群晖 SSH 执行一次即可（已存在同名容器需先 <code>docker rm -f watchtower-trigger</code>）。</p>
+        <pre class="check-cmd-code" id="trigger-cmd">加载中...</pre>
+      </div>
+
+      <div class="actions-bar">
+        <button class="btn-login btn-primary" id="upgrade-all">一键全部升级</button>
+        <button class="btn-refresh" id="refresh-list">刷新列表</button>
+      </div>
+
+      <div class="site-list" id="updates-container">
+        <!-- 待升级镜像动态生成 -->
+      </div>
+    </main>
+
+    <footer>
+      <p>守护剑士团 PT 保活工具</p>
+    </footer>
+  </div>
+
+  <div id="message-container" class="message-container"></div>
+
+  <script src="upgrade.js"></script>
+</body>
+</html>

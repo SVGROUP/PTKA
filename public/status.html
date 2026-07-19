@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>站点登录状态 - PT 保活工具</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>PT 自动保活</h1>
+      <p>每日自动登录保活，支持多站点</p>
+      <div class="header-nav">
+        <a href="index.html" class="nav-link">← 返回首页</a>
+      </div>
+    </header>
+
+    <main>
+      <div class="actions-bar">
+        <button class="btn-login btn-primary" id="login-all">全部重新登录</button>
+        <button class="btn-refresh" id="refresh-status">刷新状态</button>
+      </div>
+
+      <div class="sites-grid" id="sites-container">
+        <!-- 站点卡片动态生成 -->
+      </div>
+    </main>
+
+    <footer>
+      <p>守护剑士团 PT 保活工具</p>
+    </footer>
+  </div>
+
+  <!-- 消息提示容器 -->
+  <div id="message-container" class="message-container"></div>
+
+  <!-- 回到顶部按钮 -->
+  <button id="back-to-top" class="back-to-top" title="回到顶部">
+    ↑
+  </button>
+
+  <script src="status.js"></script>
+  <script>
+    // 回到顶部功能
+    const backToTopBtn = document.getElementById('back-to-top');
+    
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 300) {
+        backToTopBtn.classList.add('show');
+      } else {
+        backToTopBtn.classList.remove('show');
+      }
+    });
+    
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  </script>
+</body>
+</html>

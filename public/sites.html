@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>站点管理 - PT 保活工具</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>PT 自动保活</h1>
+      <p>每日自动登录保活，支持多站点</p>
+      <div class="header-nav">
+        <a href="index.html" class="nav-link">← 返回首页</a>
+      </div>
+    </header>
+
+    <main>
+      <!-- 操作按钮区 -->
+      <div class="action-bar">
+        <button class="btn btn-primary" id="btnAddSite">+ 新增站点</button>
+        <button class="btn btn-secondary" id="btnImportDefault">导入默认站点</button>
+      </div>
+
+      <!-- 新增/编辑站点表单 -->
+      <div class="card" id="formCard" style="display: none;">
+        <h3 id="formTitle">新增站点</h3>
+        <form id="siteForm">
+          <input type="hidden" id="siteId">
+          <div class="form-group">
+            <label for="siteKey">站点标识</label>
+            <input type="text" id="siteKey" placeholder="例如: mteam" required>
+            <small>唯一标识，仅支持字母数字，创建后不可修改</small>
+          </div>
+          <div class="form-group">
+            <label for="siteName">站点名称</label>
+            <input type="text" id="siteName" placeholder="例如: M-Team" required>
+          </div>
+          <div class="form-group">
+            <label for="siteUrl">站点 URL</label>
+            <input type="url" id="siteUrl" placeholder="例如: https://kp.m-team.cc/" required>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="btnCancel">取消</button>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- 批量导入区域 -->
+      <div class="card">
+        <h3>批量导入</h3>
+        <p>粘贴站点列表，每行格式：<code>site_key|site_name|site_url</code></p>
+        <textarea id="batchImportText" rows="10" placeholder="例如:
+mteam|M-Team|https://kp.m-team.cc/
+chdbits|CHDBits|https://ptchdbits.co/
+..."></textarea>
+        <div class="form-actions">
+          <button class="btn btn-primary" id="btnBatchImport">开始导入</button>
+        </div>
+      </div>
+
+      <!-- 站点列表 -->
+      <div class="card">
+        <h3>已添加站点 ( <span id="siteCount">0</span> )</h3>
+        <div class="site-list" id="siteList">
+          <!-- 动态生成 -->
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>守护剑士团 PT 保活工具</p>
+    </footer>
+  </div>
+
+  <!-- 消息提示容器 -->
+  <div id="message-container" class="message-container"></div>
+
+  <!-- 回到顶部按钮 -->
+  <button id="back-to-top" class="back-to-top" title="回到顶部">
+    ↑
+  </button>
+
+  <script src="sites.js"></script>
+  <script>
+    // 回到顶部功能
+    const backToTopBtn = document.getElementById('back-to-top');
+    
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 300) {
+        backToTopBtn.classList.add('show');
+      } else {
+        backToTopBtn.classList.remove('show');
+      }
+    });
+    
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  </script>
+</body>
+</html>

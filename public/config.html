@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>配置管理 - PT 保活工具</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-config">
+  <div class="container">
+    <header>
+      <h1>PT 自动保活</h1>
+      <p>每日自动登录保活，支持多站点</p>
+      <div class="header-nav">
+        <a href="index.html" class="nav-link">← 返回首页</a>
+      </div>
+    </header>
+
+    <main>
+      <div class="tab-content active">
+        <div class="config-section">
+          <div id="global-settings" class="config-card global-settings-card">
+            <div class="config-site-name">全局代理设置</div>
+            <div class="config-row">
+              <label class="config-label">全局代理地址</label>
+              <input type="text" id="global-proxy-url" class="config-input" placeholder="例如: http://127.0.0.1:7890（留空表示不使用代理）">
+            </div>
+            <div class="config-hint">在此统一填写代理地址，各站点只需在下方勾选“启用代理”即可共用此地址。</div>
+            <hr class="config-divider">
+            <div class="config-site-name">随机登录时间</div>
+            <div class="config-row">
+              <label class="config-checkbox">
+                <input type="checkbox" id="random-login-enabled">
+                <span>启用随机登录（每个站点每天在下方时间窗口内随机时间登录）</span>
+              </label>
+            </div>
+            <div class="config-row">
+              <label class="config-label">时间窗口</label>
+              <input type="time" id="random-window-start" class="config-input time-input">
+              <span>至</span>
+              <input type="time" id="random-window-end" class="config-input time-input">
+            </div>
+            <div class="config-hint">开启后将不再使用顶部固定定时（默认北京 9:00），而是每天为每个站点在窗口内随机选一个时间登录。时间为北京时间。</div>
+            <div class="config-row">
+              <button id="save-global-settings" class="btn-save">保存全局设置</button>
+            </div>
+          </div>
+          <div id="config-search-bar" class="config-search-bar">
+            <input type="text" id="config-search" class="config-search-input" placeholder="🔍 搜索站点（名称或标识，快速定位配置）">
+            <button id="config-search-clear" class="config-search-clear" title="清空">✕</button>
+          </div>
+          <div id="config-list">
+            <!-- 配置项会动态生成 -->
+          </div>
+          <div id="config-empty" class="config-empty" style="display:none;">没有匹配的站点</div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>守护剑士团 PT 保活工具</p>
+    </footer>
+  </div>
+
+  <!-- 消息提示容器 -->
+  <div id="message-container" class="message-container"></div>
+
+  <!-- 回到顶部按钮 -->
+  <button id="back-to-top" class="back-to-top" title="回到顶部">
+    ↑
+  </button>
+
+  <script src="config.js"></script>
+  <script>
+    // 回到顶部功能
+    const backToTopBtn = document.getElementById('back-to-top');
+    
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 300) {
+        backToTopBtn.classList.add('show');
+      } else {
+        backToTopBtn.classList.remove('show');
+      }
+    });
+    
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  </script>
+</body>
+</html>

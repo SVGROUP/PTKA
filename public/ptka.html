@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PT 保活工具</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>PT 自动保活</h1>
+      <p>每日自动登录保活，支持多站点</p>
+    </header>
+
+    <main class="home-content">
+      <div class="config-password-panel">
+        <label for="config-password-input">配置管理密码</label>
+        <input id="config-password-input" type="password" autocomplete="current-password" placeholder="打开配置管理前请输入密码">
+      </div>
+
+      <div class="menu-grid">
+        <a href="status.html" class="menu-card">
+          <div class="menu-icon">📊</div>
+          <h3>站点登录状态</h3>
+          <p>查看各站点登录状态，手动触发登录</p>
+        </a>
+        <a href="config.html" class="menu-card">
+          <div class="menu-icon">⚙️</div>
+          <h3>配置管理</h3>
+          <p>管理站点配置和代理设置</p>
+        </a>
+        <a href="sites.html" class="menu-card">
+          <div class="menu-icon">🌐</div>
+          <h3>站点管理</h3>
+          <p>新增/删除/导入站点配置</p>
+        </a>
+        <a href="calendar.html" class="menu-card">
+          <div class="menu-icon">📅</div>
+          <h3>日历待办</h3>
+          <p>按月/周/日管理待办事项，支持标签、颜色、跨天任务和时间轴</p>
+        </a>
+        <a href="gantt.html" class="menu-card">
+          <div class="menu-icon">📊</div>
+          <h3>任务甘特图</h3>
+          <p>按项目管理任务，支持前后置依赖、工期驱动自动排期、五档颗粒度</p>
+        </a>
+      </div>
+    </main>
+
+    <footer>
+      <p>守护剑士团 PT 保活工具</p>
+    </footer>
+  </div>
+
+  <script src="ptka.js"></script>
+</body>
+</html>
