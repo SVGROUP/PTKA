@@ -65,7 +65,7 @@
     "x86_64::./pt_keepalive/app.py": "0810052b50a32decb433544923aa2ac5",
     "x86_64::./pt_keepalive/database.py": "d3780c24c693c9f558999abb24d1ed7d",
     "x86_64::./pt_keepalive/scheduler.py": "2388158110d6bf53db0d6cfac3236275",
-    "x86_64::./pt_keepalive/svlog.py": "f74273bfcd5d82e2fef0e907cab4378c",
+    "x86_64::./pt_keepalive/svlog.py": "ac099cdf4833d4cac0c3e96089177b64",
     "x86_64::./pt_keepalive/models.py": "945a2ef3c05d2c0406c273c6b21702e9",
     "x86_64::release/run.sh": "1d19cd51001ccf792fdcccd8dbb48150",
     "x86_64::release/run.py": "524b81d562470e03226a1accc1af5a5e",
@@ -94,7 +94,7 @@
     "aarch64::./pt_keepalive/app.py": "0810052b50a32decb433544923aa2ac5",
     "aarch64::./pt_keepalive/database.py": "d3780c24c693c9f558999abb24d1ed7d",
     "aarch64::./pt_keepalive/scheduler.py": "2388158110d6bf53db0d6cfac3236275",
-    "aarch64::./pt_keepalive/svlog.py": "f74273bfcd5d82e2fef0e907cab4378c",
+    "aarch64::./pt_keepalive/svlog.py": "ac099cdf4833d4cac0c3e96089177b64",
     "aarch64::./pt_keepalive/models.py": "945a2ef3c05d2c0406c273c6b21702e9",
     "aarch64::release/run.sh": "1d19cd51001ccf792fdcccd8dbb48150",
     "aarch64::release/run.py": "524b81d562470e03226a1accc1af5a5e",
@@ -131,11 +131,11 @@
     "aarch64::release/status.html": "c32b520afd9757da5b35461349cae2fd",
     "aarch64::release/sites.js": "fcdfb382b2495a18968ac39e3d14f0b7",
     "aarch64::release/Dockerfile": "be4534ca0436fdb2167183f04e00a89c",
-    "aarch64::release/compiled_hashes.json": "91f3868787b2c5d712e1d5306422adae",
+    "aarch64::release/compiled_hashes.json": "b56b02a80aee65741ce971a690c9c933",
     "aarch64::release/upgrade.html": "33c4e5fd1b869b6ff011cb12728a1ebc",
     "aarch64::release/config.yaml.template": "1f91b8cea6f165bd06e54d3dba40156d",
     "aarch64::release/config.yaml": "20a01ca7acbc1fbd9b7a0651e7f06e9b",
-    "aarch64::release/svlog.cpython-313-x86_64-linux-gnu.so": "c231d5c55a3c9df9eafa82f509ae8d7a",
+    "aarch64::release/svlog.cpython-313-x86_64-linux-gnu.so": "2659cdc4b1359b0394faad2f1eb48450",
     "aarch64::release/style.css": "afb30306a81b68f953a25f992ad7055b",
     "aarch64::release/crontab.example": "92d3aa33a3c4a3c1eb1734a0709522a7",
     "aarch64::release/status.js": "aefbc28dded111375b0603d4a8934f49",
@@ -143,5 +143,5 @@
     "aarch64::release/AGENTS.md": "9ffdc4c90821576475e54f3275d8e6c2",
     "aarch64::release/__init__.py": "52d47aa6bd6fb713789a7aee4ef940f0"
   },
-  "last_git_commit": "b288599d24cdcb9eaeb703b691cdc343ef4d5b2c"
+  "last_git_commit": "e257bd4a0c18044e66d310270723c3c1e03f6e55"
 }
