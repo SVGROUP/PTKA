@@ -27,7 +27,16 @@ git_pull_best() {
     echo "Using remote: $best_remote"
     # 发布库采用孤儿分支 force-push，历史会被重写；普通 git pull 会因“unrelated histories”失败。
     # 改用 fetch + reset --hard 硬跟远端，对被覆盖的新历史免疫；--depth 1 保持浅克隆，客户端 .git 也不膨胀。
-    git fetch --depth 1 "$best_remote" master && git reset --hard FETCH_HEAD
+    # -c credential.helper= 强制不使用 credentials，公共库匿名拉取
+    if ! git -c credential.helper= fetch --depth 1 "$best_remote" master; then
+        if [ "$best_remote" != "origin" ]; then
+            echo "$best_remote 拉取失败，自动 fallback 到 origin"
+            git -c credential.helper= fetch --depth 1 origin master
+        else
+            exit 1
+        fi
+    fi
+    git reset --hard FETCH_HEAD
 }
 
 # 从 ATUS 拉取当前 tool 的 release_hash（GitHub push 成功后 CI 上报的权威 hash）。
