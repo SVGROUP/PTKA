@@ -67,7 +67,7 @@
     "x86_64::./pt_keepalive/scheduler.py": "2388158110d6bf53db0d6cfac3236275",
     "x86_64::./pt_keepalive/svlog.py": "ac099cdf4833d4cac0c3e96089177b64",
     "x86_64::./pt_keepalive/models.py": "945a2ef3c05d2c0406c273c6b21702e9",
-    "x86_64::release/run.sh": "40e0c44d081adb6f42a6055dbec88ba0",
+    "x86_64::release/run.sh": "622a77599ddd2e00e8d8b397e3b66f82",
     "x86_64::release/run.py": "524b81d562470e03226a1accc1af5a5e",
     "x86_64::release/init.sh": "ef4af201cfdca5124cb045a480c911f5",
     "x86_64::public/config.js": "25a6a52989d14d2cd9fc1c9a344b925c",
@@ -96,7 +96,7 @@
     "aarch64::./pt_keepalive/scheduler.py": "2388158110d6bf53db0d6cfac3236275",
     "aarch64::./pt_keepalive/svlog.py": "ac099cdf4833d4cac0c3e96089177b64",
     "aarch64::./pt_keepalive/models.py": "945a2ef3c05d2c0406c273c6b21702e9",
-    "aarch64::release/run.sh": "40e0c44d081adb6f42a6055dbec88ba0",
+    "aarch64::release/run.sh": "622a77599ddd2e00e8d8b397e3b66f82",
     "aarch64::release/run.py": "524b81d562470e03226a1accc1af5a5e",
     "aarch64::release/init.sh": "ef4af201cfdca5124cb045a480c911f5",
     "aarch64::public/config.js": "25a6a52989d14d2cd9fc1c9a344b925c",
@@ -115,5 +115,5 @@
     "x86_64::./pt_keepalive/upgrade_checker.py": "cda5b9f1ea70bd2f5b4743818d90a096",
     "aarch64::./pt_keepalive/upgrade_checker.py": "cda5b9f1ea70bd2f5b4743818d90a096"
   },
-  "last_git_commit": "ac9a12e7ed23ed084fcc8a83698472cdecd4da90"
+  "last_git_commit": "9dfc516c890365875a0d5bd1767595a0342cdfa4"
 }

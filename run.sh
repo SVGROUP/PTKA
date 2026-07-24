@@ -146,7 +146,7 @@ verify_app() {
 
 if ! git remote | grep -q "^gitee$"; then
     echo "gitee remote not found, adding..."
-    git remote add gitee https://gitee.com/svtool/PTKA.git
+    git remote add gitee https://gitee.com/SVGROUP/PTKA.git
 fi
 
 # 首启：拉最新代码 + 尽力校验一次 hash（不阻塞启动；旧代码继续对外服务好过无服务）
