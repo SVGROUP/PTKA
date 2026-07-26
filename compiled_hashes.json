@@ -82,7 +82,7 @@
     "x86_64::public/style.css": "afb30306a81b68f953a25f992ad7055b",
     "x86_64::public/status.js": "aefbc28dded111375b0603d4a8934f49",
     "x86_64::commit_file/commit.sh": "f3ece85990e45c3765bf1b7294e8b1d0",
-    "x86_64::commit_file/update.sh": "5182e73fd848644a44cbcd9ccdb4072e",
+    "x86_64::commit_file/update.sh": "6c0926711dd9a112d159653372e8a6da",
     "aarch64::./pt_keepalive/api/login.py": "a51fb9b6a75dc4b0851beadcb8dc5584",
     "aarch64::./pt_keepalive/api/upgrade.py": "4f95b1ad81b60aff9bf13b6b9862bf4b",
     "aarch64::./pt_keepalive/api/notify.py": "ac96a4fa4ee2d2db03bb5f9596f49cc0",
@@ -111,9 +111,9 @@
     "aarch64::public/style.css": "afb30306a81b68f953a25f992ad7055b",
     "aarch64::public/status.js": "aefbc28dded111375b0603d4a8934f49",
     "aarch64::commit_file/commit.sh": "f3ece85990e45c3765bf1b7294e8b1d0",
-    "aarch64::commit_file/update.sh": "5182e73fd848644a44cbcd9ccdb4072e",
+    "aarch64::commit_file/update.sh": "6c0926711dd9a112d159653372e8a6da",
     "x86_64::./pt_keepalive/upgrade_checker.py": "cda5b9f1ea70bd2f5b4743818d90a096",
     "aarch64::./pt_keepalive/upgrade_checker.py": "cda5b9f1ea70bd2f5b4743818d90a096"
   },
-  "last_git_commit": "5468c0b10537a997e59ee27e899655c27c0a3771"
+  "last_git_commit": "c38a89cf76c13602f9dfc168c6fbb14a665e26bb"
 }
