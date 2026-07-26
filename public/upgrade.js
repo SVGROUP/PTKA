@@ -1,8 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
   const messageContainer = document.getElementById('message-container');
   const container = document.getElementById('updates-container');
+  const historyContainer = document.getElementById('history-container');
   const upgradeAllBtn = document.getElementById('upgrade-all');
   const refreshBtn = document.getElementById('refresh-list');
+  const refreshHistoryBtn = document.getElementById('refresh-history');
 
   function showMessage(message, type = 'info') {
     const toast = document.createElement('div');
@@ -80,6 +82,40 @@ document.addEventListener('DOMContentLoaded', () => {
     container.querySelectorAll('.btn-remove').forEach(btn => {
       btn.addEventListener('click', () => doRemove(btn.dataset.container));
     });
+  }
+
+  async function loadHistory() {
+    try {
+      const res = await fetch('/api/upgrade/history');
+      const json = await res.json();
+      renderHistory(json.data || []);
+    } catch (e) {
+      if (historyContainer) {
+        historyContainer.innerHTML = '<div class="empty-message">历史加载失败: ' + escapeHtml(e.message) + '</div>';
+      }
+    }
+  }
+
+  function renderHistory(list) {
+    if (!historyContainer) return;
+    if (!list.length) {
+      historyContainer.innerHTML = '<div class="empty-message">暂无版本变迁记录</div>';
+      return;
+    }
+    historyContainer.innerHTML = list.map(item => {
+      const from = item.fromTag ? escapeHtml(item.fromTag) : '(未知)';
+      const to = item.toTag ? escapeHtml(item.toTag) : '(未匹配到具名tag)';
+      const digest = item.digest ? String(item.digest).slice(0, 12) : '';
+      const title = escapeHtml(item.imageName || item.imageKey || '');
+      return `
+        <div class="site-item">
+          <div class="site-info">
+            <div class="site-name">${title}</div>
+            <div class="site-url"><b>${from}</b> → <b>${to}</b></div>
+            <div class="site-key">${escapeHtml(formatTime(item.recordedAt))}${digest ? ' · ' + escapeHtml(digest) : ''}</div>
+          </div>
+        </div>`;
+    }).join('');
   }
 
   async function doUpgrade(name, btn) {
@@ -177,5 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   upgradeAllBtn.addEventListener('click', upgradeAll);
   refreshBtn.addEventListener('click', loadList);
+  if (refreshHistoryBtn) refreshHistoryBtn.addEventListener('click', loadHistory);
   loadList();
+  loadHistory();
 });

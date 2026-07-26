@@ -35,6 +35,15 @@
       <div class="site-list" id="updates-container">
         <!-- 待升级镜像动态生成 -->
       </div>
+
+      <div class="actions-bar" style="margin-top:32px;">
+        <h2 style="margin:0;font-size:18px;">📜 版本变迁历史</h2>
+        <button class="btn-refresh" id="refresh-history">刷新历史</button>
+      </div>
+      <p class="check-cmd-hint">latest 给 watchtower 自动更新用；这里记录同一 digest 对应的具体版本号 tag，给人看“什么时候从哪个版本升到了哪个版本”。</p>
+      <div class="site-list" id="history-container">
+        <!-- 版本变迁历史动态生成 -->
+      </div>
     </main>
 
     <footer>
