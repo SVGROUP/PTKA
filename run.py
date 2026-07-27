@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import os
 from pt_keepalive.app import main
-ver = "2026-07-27 17:35:25"
-ts = 1785144925
+ver = "2026-07-27 18:02:08"
+ts = 1785146528
 if __name__ == "__main__":
     os.environ["PTKA_VERSION"] = ver
     os.environ["PTKA_BUILD_TS"] = str(ts)
