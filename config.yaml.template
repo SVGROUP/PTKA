@@ -12,11 +12,29 @@ schedule: "0 1 * * *"
 # SQLite 数据库文件路径
 database_path: "./data/pt-keepalive.db"
 
-# 飞书自定义机器人 webhook（用于 Watchtower 镜像更新通知转发，留空则禁用）
-# Watchtower 通知 URL 指向: generic://<本机IP>:50002/api/notify/feishu?disabletls=yes
-feishu_webhook: ""
-# 飞书机器人如开了“自定义关键词”安全验证，把其中一个关键词填这里，发送时会自动带上；留空不带
-feishu_keyword: ""
+# ===== 通知配置（零兜底：以下项必须显式填写，缺失启动会直接报错）=====
+# ATUS 中心服务基地址（只到端口根，不带路径；通知走 {base}/sv/notify/send）
+# 形如 http://atut.efdata.fun:45678
+atus_base_url: "http://atut.efdata.fun:45678"
+
+# 是否启用通知（登录失败告警 / 镜像更新 / 升级被拒）
+notify_enabled: true
+
+# 通知渠道（目前支持 feishu）
+notify_channel: "feishu"
+
+# 飞书自定义机器人 webhook 的 hook token（URL 末段那串）
+# 由 ATUS /sv/notify/send 拼接发送
+notify_feishu_hook_token: ""
+
+# 飞书机器人签名校验密钥（开了“签名校验”安全验证时必填；未开可留空）
+notify_feishu_secret: ""
+
+# 升级检测服务基地址（只到端口根，不带路径；长轮询走 {base}/sv/auth/api/upgrade），一般与 atus_base_url 相同
+upgrade_base_url: "http://atut.efdata.fun:45678"
+
+# 升级 tag（区分不同发布产品）
+upgrade_tag: "PTKA"
 
 # Watchtower 人工触发升级（watchtower-trigger 实例的 HTTP API）
 # 页面点“升级”时 PTKA 会调 <url>/v1/update?images=<容器名>
