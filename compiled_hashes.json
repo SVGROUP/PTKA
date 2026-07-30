@@ -56,7 +56,7 @@
     "public/favicon.ico": "aed4b8eb34c47c047eb15590abb5ef3d",
     "x86_64::./pt_keepalive/api/login.py": "a51fb9b6a75dc4b0851beadcb8dc5584",
     "x86_64::./pt_keepalive/api/upgrade.py": "577144d3d3c7a0c9ac21df01d50d5f7b",
-    "x86_64::./pt_keepalive/api/notify.py": "866c994b6603ea907e896b97157e24f5",
+    "x86_64::./pt_keepalive/api/notify.py": "0e569db51871dab51f8a5886bc47c247",
     "x86_64::./pt_keepalive/api/config_routes.py": "b9b65b20f64983580f0d2229bbdcd309",
     "x86_64::./pt_keepalive/api/status.py": "d76ba8ecb0e29d44643a31f7b4b7a182",
     "x86_64::./pt_keepalive/services/base.py": "faf821be221a73b0434244be0499d6a5",
@@ -84,7 +84,7 @@
     "x86_64::commit_file/update.sh": "6c0926711dd9a112d159653372e8a6da",
     "aarch64::./pt_keepalive/api/login.py": "a51fb9b6a75dc4b0851beadcb8dc5584",
     "aarch64::./pt_keepalive/api/upgrade.py": "577144d3d3c7a0c9ac21df01d50d5f7b",
-    "aarch64::./pt_keepalive/api/notify.py": "866c994b6603ea907e896b97157e24f5",
+    "aarch64::./pt_keepalive/api/notify.py": "0e569db51871dab51f8a5886bc47c247",
     "aarch64::./pt_keepalive/api/config_routes.py": "b9b65b20f64983580f0d2229bbdcd309",
     "aarch64::./pt_keepalive/api/status.py": "d76ba8ecb0e29d44643a31f7b4b7a182",
     "aarch64::./pt_keepalive/services/base.py": "faf821be221a73b0434244be0499d6a5",
@@ -128,13 +128,13 @@
     "aarch64::release/__init__.py": "52d47aa6bd6fb713789a7aee4ef940f0",
     "aarch64::release/config.js": "25a6a52989d14d2cd9fc1c9a344b925c",
     "aarch64::release/crontab.example": "92d3aa33a3c4a3c1eb1734a0709522a7",
-    "aarch64::release/check-image-updates.sh": "56849e8e7f28efdf05e86f4cfdc028f2",
+    "aarch64::release/check-image-updates.sh": "b6b261aeb5dd8382b1bf94b00cdc0ac8",
     "aarch64::release/config.yaml": "a4d5ef5f0ab999b9a0b99c5909ca51df",
     "aarch64::release/status.js": "aefbc28dded111375b0603d4a8934f49",
     "aarch64::release/upgrade.js": "0403fbb54f0a0881ea3b051bebabb9bd",
     "aarch64::release/upgrade.html": "14ed3fd5b998d7f5e636118382521993",
     "aarch64::release/sites.js": "fcdfb382b2495a18968ac39e3d14f0b7",
-    "aarch64::release/compiled_hashes.json": "2fc35aa40f9d446f66c1c9fe6382d589",
+    "aarch64::release/compiled_hashes.json": "42751fc1210970c7d3c4a33d451d9141",
     "aarch64::release/style.css": "afb30306a81b68f953a25f992ad7055b",
     "aarch64::release/README.md": "af2daedc37efdc08aacc7708af75190a",
     "aarch64::release/update.sh": "6c0926711dd9a112d159653372e8a6da",
@@ -142,8 +142,7 @@
     "aarch64::release/default_sites.txt": "06fba6d4730a6d4b6c367fbe05fa8d37",
     "x86_64::./pt_keepalive/notifier.py": "c4a29273b5fa79884ff9b07da8d200bd",
     "aarch64::./pt_keepalive/notifier.py": "c4a29273b5fa79884ff9b07da8d200bd",
-    "aarch64::release/base.cpython-313-x86_64-linux-gnu.so": "22573d87247547ae1d8d5455557c60ec",
-    "aarch64::release/scheduler.cpython-313-x86_64-linux-gnu.so": "9c8a2aa13ed1066f72e55820ad980db1"
+    "aarch64::release/notify.cpython-313-x86_64-linux-gnu.so": "2eb6c6b820af1d7df75d1ee5a38cb554"
   },
-  "last_git_commit": "7e3eb33b1330a7b87031891bcc0a54cac18133ff"
+  "last_git_commit": "91ec4d1f9e0ec9ffc37c9fd4552405dc96bfd042"
 }
