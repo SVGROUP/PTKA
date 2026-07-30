@@ -119,7 +119,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function doUpgrade(name, btn) {
-    if (!confirm(`确认升级镜像 "${name}" ？会拉取新镜像并重建对应容器。`)) return;
+    const ok = await window.confirmModal({
+      title: '升级镜像',
+      message: `确认升级镜像 "${name}" ？会拉取新镜像并重建对应容器。`,
+      confirmText: '升级',
+      cancelText: '取消',
+    });
+    if (!ok) return;
     btn.disabled = true;
     btn.textContent = '升级中...';
     try {
@@ -158,7 +164,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function upgradeAll() {
-    if (!confirm('确认升级【所有】监控中的容器？这会拉取并重建它们。')) return;
+    const ok = await window.confirmModal({
+      title: '升级所有容器',
+      message: '确认升级【所有】监控中的容器？这会拉取并重建它们。',
+      confirmText: '全部升级',
+      cancelText: '取消',
+      danger: true,
+    });
+    if (!ok) return;
     upgradeAllBtn.disabled = true;
     upgradeAllBtn.textContent = '升级中...';
     try {

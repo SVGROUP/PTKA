@@ -156,7 +156,14 @@ async function deleteSite(id) {
   const site = sites.find(s => s.id === id);
   if (!site) return;
 
-  if (!confirm(`确定要删除站点 "${site.siteName}" 吗？\n此操作不可恢复。`)) {
+  const ok = await window.confirmModal({
+    title: '删除站点',
+    message: `确定要删除站点 "${site.siteName}" 吗？\n此操作不可恢复。`,
+    confirmText: '删除',
+    cancelText: '取消',
+    danger: true,
+  });
+  if (!ok) {
     return;
   }
 
@@ -206,7 +213,13 @@ document.getElementById('btnBatchImport').addEventListener('click', async () => 
     return;
   }
 
-  if (!confirm(`确定要导入 ${sites.length} 个站点吗？已存在的站点会被跳过。`)) {
+  const ok = await window.confirmModal({
+    title: '导入站点',
+    message: `确定要导入 ${sites.length} 个站点吗？已存在的站点会被跳过。`,
+    confirmText: '导入',
+    cancelText: '取消',
+  });
+  if (!ok) {
     return;
   }
 
@@ -231,7 +244,13 @@ document.getElementById('btnBatchImport').addEventListener('click', async () => 
 
 // 导入默认站点
 document.getElementById('btnImportDefault').addEventListener('click', async () => {
-  if (!confirm('确定要导入默认站点列表吗？会添加所有预设的PT站点，已存在的会被跳过。')) {
+  const ok = await window.confirmModal({
+    title: '导入默认站点',
+    message: '确定要导入默认站点列表吗？会添加所有预设的PT站点，已存在的会被跳过。',
+    confirmText: '导入',
+    cancelText: '取消',
+  });
+  if (!ok) {
     return;
   }
 

@@ -1,0 +1,165 @@
+/* ============ 通用模态框（取代浏览器原生 alert/confirm）============ */
+
+/* 遮罩 */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 20, 35, 0.55);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  padding: 20px;
+}
+.modal-overlay.modal-show {
+  opacity: 1;
+}
+
+/* 卡片 */
+.modal-card {
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  width: 100%;
+  max-width: 460px;
+  overflow: hidden;
+  transform: translateY(8px) scale(0.98);
+  transition: transform 0.18s ease;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+.modal-overlay.modal-show .modal-card {
+  transform: translateY(0) scale(1);
+}
+
+/* 头部 */
+.modal-header {
+  padding: 18px 22px 0 22px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.modal-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #fff;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.modal-icon.modal-icon-danger {
+  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+}
+.modal-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1a202c;
+  flex: 1;
+  word-break: break-word;
+}
+.modal-close {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  color: #a0aec0;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+.modal-close:hover {
+  background: #f1f5f9;
+  color: #4a5568;
+}
+
+/* 正文（保留换行） */
+.modal-body {
+  padding: 12px 22px 18px 22px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #4a5568;
+  white-space: pre-line;
+  word-break: break-word;
+  overflow-y: auto;
+}
+
+/* 按钮区 */
+.modal-footer {
+  padding: 14px 22px 18px 22px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+.modal-btn {
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  min-width: 72px;
+}
+.modal-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.35);
+}
+.modal-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.modal-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.modal-btn-cancel {
+  background: #ffffff;
+  color: #4a5568;
+  border: 1px solid #cbd5e0;
+}
+.modal-btn-cancel:hover:not(:disabled) {
+  background: #f1f5f9;
+  color: #1a202c;
+}
+.modal-btn-confirm {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+.modal-btn-confirm:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+.modal-btn-danger {
+  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+  color: #fff;
+}
+.modal-btn-danger:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(229, 62, 62, 0.4);
+}
+
+/* 小屏适配 */
+@media (max-width: 480px) {
+  .modal-card {
+    max-width: 100%;
+  }
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .modal-btn {
+    min-width: 64px;
+    padding: 8px 14px;
+  }
+}
