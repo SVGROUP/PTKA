@@ -82,13 +82,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const timeLine = handled
         ? `升级于 ${formatTime(item.handledAt)}`
         : `发现于 ${formatTime(item.detectedAt)}`;
-      // 删除模式下：隐藏原“移除”按钮，改为右侧一个大「删除」按钮，避免误点。
-      const removeBtn = deleteMode
-        ? ''
-        : `<button class="btn btn-danger btn-sm btn-remove" data-container="${escapeHtml(item.containerName)}">移除</button>`;
-      const deleteBtn = deleteMode
-        ? `<button class="btn btn-danger btn-sm btn-delete" data-container="${escapeHtml(item.containerName)}">删除</button>`
-        : '';
+      // 按钮规则（2026-08-01 重构）：
+      //   默认：只对“待升级”卡片显示「升级」按钮，“已升级”不显任何按钮（避免误删）。
+      //   删除模式：所有卡片右侧显示「移除」按钮；升级按钮隐藏，避免误点。
+      let actions = '';
+      if (deleteMode) {
+        actions = `<button class="btn btn-danger btn-sm btn-remove" data-container="${escapeHtml(item.containerName)}">移除</button>`;
+      } else if (!handled) {
+        actions = `<button class="btn btn-primary btn-sm btn-upgrade" data-container="${escapeHtml(item.containerName)}">升级</button>`;
+      }
       return `
         <div class="site-item${deleteMode ? ' delete-mode' : ''}">
           <div class="site-info">
@@ -97,8 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="site-key">${escapeHtml(item.status || '')} · ${timeLine}</div>
           </div>
           <div class="site-actions">
-            <button class="btn btn-primary btn-sm btn-upgrade" data-container="${escapeHtml(item.containerName)}" ${handled ? 'disabled' : ''}>升级</button>
-            ${removeBtn}${deleteBtn}
+            ${actions}
           </div>
         </div>`;
     }).join('');
@@ -108,9 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     container.querySelectorAll('.btn-remove').forEach(btn => {
       btn.addEventListener('click', () => doRemove(btn.dataset.container));
-    });
-    container.querySelectorAll('.btn-delete').forEach(btn => {
-      btn.addEventListener('click', () => doDelete(btn.dataset.container, btn));
     });
   }
 
@@ -178,6 +176,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function doRemove(name) {
+    const ok = await window.confirmModal({
+      title: '移除记录',
+      message: `确认移除镜像记录 "${name}" ？仅从本页面列表删除，不会动 Docker。`,
+      confirmText: '移除',
+      cancelText: '取消',
+      danger: true,
+    });
+    if (!ok) return;
     try {
       const res = await fetch('/api/upgrade/delete', {
         method: 'POST',
@@ -188,32 +194,6 @@ document.addEventListener('DOMContentLoaded', () => {
       showMessage(json.message || '已移除', json.success ? 'success' : 'error');
     } catch (e) {
       showMessage('移除失败: ' + e.message, 'error');
-    } finally {
-      loadList();
-    }
-  }
-
-  async function doDelete(name, btn) {
-    const ok = await window.confirmModal({
-      title: '删除记录',
-      message: `确认删除镜像记录 "${name}" ？仅删除本页面上的条目，不会动 Docker。`,
-      confirmText: '删除',
-      cancelText: '取消',
-      danger: true,
-    });
-    if (!ok) return;
-    btn.disabled = true;
-    btn.textContent = '删除中...';
-    try {
-      const res = await fetch('/api/upgrade/delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ container: name })
-      });
-      const json = await res.json();
-      showMessage(json.message || '已删除', json.success ? 'success' : 'error');
-    } catch (e) {
-      showMessage('删除失败: ' + e.message, 'error');
     } finally {
       loadList();
     }
