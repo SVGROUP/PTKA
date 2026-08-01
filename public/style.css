@@ -99,7 +99,7 @@ main {
 /* 操作栏 */
 .actions-bar {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 15px;
   margin-bottom: 25px;
 }
@@ -153,6 +153,17 @@ main {
 
 .btn-refresh:hover {
   background: #667eea;
+  color: white;
+}
+
+/* 删除模式开关：启用后变红边白底，提示危险操作 */
+.btn-refresh.active {
+  background: #fff5f5;
+  color: #e53e3e;
+  border-color: #e53e3e;
+}
+.btn-refresh.active:hover {
+  background: #e53e3e;
   color: white;
 }
 
