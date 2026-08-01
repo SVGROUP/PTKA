@@ -54,7 +54,7 @@
     }
   }
 
-  function _build({ title, message, confirmText, cancelText, danger, dismissable, showCancel }) {
+  function _build({ title, message, confirmText, cancelText, danger, dismissable, showCancel, _isPrompt, inputPlaceholder, inputDefaultValue, inputType }) {
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
     overlay.setAttribute('role', 'alertdialog');
@@ -65,6 +65,10 @@
     const iconLabel = danger ? '!' : 'ⓘ';
     const showX = !!dismissable;  // 只有可关闭的模态框才显示右上角 X
 
+    const inputHtml = _isPrompt
+      ? `<input type="${inputType || 'text'}" class="modal-input" placeholder="${_esc(inputPlaceholder || '')}" value="${_esc(inputDefaultValue || '')}" />`
+      : '';
+
     overlay.innerHTML = `
       <div class="modal-card" role="document">
         <div class="modal-header">
@@ -72,7 +76,7 @@
           <div class="modal-title">${_esc(title || '提示')}</div>
           ${showX ? '<button class="modal-close" type="button" aria-label="关闭">×</button>' : ''}
         </div>
-        <div class="modal-body">${_esc(message || '')}</div>
+        <div class="modal-body">${_esc(message || '')}${inputHtml}</div>
         <div class="modal-footer">
           ${showCancel ? `<button class="modal-btn modal-btn-cancel" data-act="cancel" type="button">${_esc(cancelText || '取消')}</button>` : ''}
           <button class="modal-btn ${danger ? 'modal-btn-danger' : 'modal-btn-confirm'}" data-act="confirm" type="button">${_esc(confirmText || '确定')}</button>
@@ -80,6 +84,7 @@
       </div>
     `;
 
+    if (_isPrompt) overlay._isPrompt = true;
     return overlay;
   }
 
@@ -119,15 +124,20 @@
       const onClick = (e) => {
         const btn = e.target.closest('button[data-act]');
         if (btn) {
-          _close(overlay, btn.dataset.act === 'confirm');
+          if (btn.dataset.act === 'confirm' && overlay._isPrompt) {
+            const input = overlay.querySelector('.modal-input');
+            _close(overlay, { __prompt: true, value: input ? input.value : '' });
+          } else {
+            _close(overlay, btn.dataset.act === 'confirm');
+          }
           return;
         }
         if (e.target.classList && e.target.classList.contains('modal-close')) {
-          _close(overlay, false);
+          _close(overlay, overlay._isPrompt ? null : false);
           return;
         }
         if (e.target === overlay && o.dismissable) {
-          _close(overlay, false);
+          _close(overlay, overlay._isPrompt ? null : false);
         }
       };
       const onKey = (e) => {
@@ -152,9 +162,14 @@
 
       // 焦点：进卡片容器，落到确认按钮
       setTimeout(() => {
-        const confirmBtn = overlay.querySelector('button[data-act="confirm"]');
-        if (confirmBtn) {
-          try { confirmBtn.focus(); } catch (_) {}
+        const input = overlay.querySelector('.modal-input');
+        if (input) {
+          try { input.focus(); input.select && input.select(); } catch (_) {}
+        } else {
+          const confirmBtn = overlay.querySelector('button[data-act="confirm"]');
+          if (confirmBtn) {
+            try { confirmBtn.focus(); } catch (_) {}
+          }
         }
       }, 30);
     });
@@ -181,6 +196,21 @@
     });
   }
 
+  /**
+   * 输入对话框，Promise<{ value: string } | null>（null 表示取消）。
+   * options:
+   *   inputPlaceholder, inputDefaultValue, inputType
+   *   - 在 input 中按 Enter = 确认；ESC = 取消
+   */
+  function promptModal(opts) {
+    const o = { ...(opts || {}), showCancel: true, _isPrompt: true };
+    return _show(o).then((r) => {
+      if (r === null) return null;
+      return { value: (r && r.__prompt) ? r.value : '' };
+    });
+  }
+
   window.confirmModal = confirmModal;
   window.alertModal = alertModal;
+  window.promptModal = promptModal;
 })();

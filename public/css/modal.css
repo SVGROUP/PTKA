@@ -173,3 +173,22 @@
     padding: 8px 14px;
   }
 }
+
+/* prompt 输入框 */
+.modal-input {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  color: #1a202c;
+  background: #fff;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.modal-input:focus {
+  border-color: var(--modal-primary-start);
+  box-shadow: 0 0 0 3px var(--modal-primary-shadow-soft);
+}

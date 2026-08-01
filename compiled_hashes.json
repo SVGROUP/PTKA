@@ -114,10 +114,10 @@
     "aarch64::./pt_keepalive/upgrade_checker.py": "5ec97931e0f4c404310468af51f17eb7",
     "x86_64::./pt_keepalive/notifier.py": "c4a29273b5fa79884ff9b07da8d200bd",
     "aarch64::./pt_keepalive/notifier.py": "c4a29273b5fa79884ff9b07da8d200bd",
-    "x86_64::public/css/modal.css": "b2d80e92f9edadea39c10077319b8997",
-    "x86_64::public/js/modal.js": "8c1fe5fb1ac818e2dafc610337e03753",
-    "aarch64::public/css/modal.css": "b2d80e92f9edadea39c10077319b8997",
-    "aarch64::public/js/modal.js": "8c1fe5fb1ac818e2dafc610337e03753"
+    "x86_64::public/css/modal.css": "b5b9f7fc9245d8319b793db11634e44a",
+    "x86_64::public/js/modal.js": "79a7c446fa07c5ddeeff236cf7c62a52",
+    "aarch64::public/css/modal.css": "b5b9f7fc9245d8319b793db11634e44a",
+    "aarch64::public/js/modal.js": "79a7c446fa07c5ddeeff236cf7c62a52"
   },
-  "last_git_commit": "b7a52ca1b78cb3fe798b5e037a4c5f3208cf6f81"
+  "last_git_commit": "c6c83079f3f9636b25994e1197927141187a35c5"
 }
