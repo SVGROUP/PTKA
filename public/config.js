@@ -164,13 +164,9 @@ document.addEventListener('DOMContentLoaded', () => {
           </label>
         </div>
         <div class="config-row config-card-actions">
-          <button class="btn-save" data-id="${config.id}">保存配置</button>
           <button class="btn-delete" data-id="${config.id}">删除</button>
         </div>
       `;
-
-      const saveBtn = card.querySelector('.btn-save');
-      saveBtn.addEventListener('click', () => saveConfig(config.id));
 
       const delBtn = card.querySelector('.btn-delete');
       delBtn.addEventListener('click', () => deleteSite(config.id));
@@ -185,6 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
           } else {
             config[field] = input.value;
           }
+          markDirtyState();
         });
       });
 
@@ -192,6 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     applyFilter();
+    // 重新渲染后重算 dirty 状态（服务器拉回的新值默认未变更）
+    markDirtyState();
   }
 
   function applyFilter() {
@@ -209,42 +208,159 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===================== 站点保存/删除/新增 =====================
 
-  async function saveConfig(id) {
-    const config = configs.find(c => c.id === id);
-    if (!config) return;
-    const saveBtn = configListEl.querySelector(`.btn-save[data-id="${id}"]`);
-    if (saveBtn) {
-      saveBtn.disabled = true;
-      saveBtn.textContent = '保存中...';
-    }
-    try {
-      const response = await fetch(`/api/config/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          siteName: config.siteName,
-          siteUrl: config.siteUrl,
-          enabled: config.enabled,
-          cookies: config.cookies,
-          proxyEnabled: config.proxyEnabled,
-          userAgent: config.userAgent,
-        }),
+  // ===================== 统一保存（仿 ARSS diff 弹窗） =====================
+
+  // 字段元信息：id/label/敏感标记（敏感字段在 diff 中打码）
+  // 顺序决定 diff 展示顺序
+  const FIELD_DEFS = [
+    { id: 'siteName',     label: '名称',        sensitive: false },
+    { id: 'siteUrl',      label: 'URL',         sensitive: false },
+    { id: 'cookies',      label: 'Cookies',     sensitive: true  },
+    { id: 'userAgent',    label: 'User-Agent',  sensitive: false },
+    { id: 'enabled',      label: '启用站点',    sensitive: false, isBool: true },
+    { id: 'proxyEnabled', label: '启用代理',    sensitive: false, isBool: true },
+  ];
+
+  // 敏感字段打码：保留前 4 后 4，中间 ***
+  // 长度 < 12 直接整体 ***
+  function maskValue(v) {
+    const s = String(v == null ? '' : v);
+    if (s.length === 0) return '(空)';
+    if (s.length < 12) return '***';
+    return s.slice(0, 4) + '***' + s.slice(-4);
+  }
+
+  // 布尔值展示：true/false → 启用/禁用
+  function formatValue(field, v) {
+    if (field.isBool) return v ? '启用' : '禁用';
+    if (v == null || v === '') return '(空)';
+    if (field.sensitive) return maskValue(v);
+    return String(v);
+  }
+
+  // 从卡片 DOM 收集当前 input 值（不依赖内存中的 config）
+  function collectCurrentValues(cardId) {
+    const card = configListEl.querySelector(`.config-card[data-id="${cardId}"]`);
+    if (!card) return null;
+    const out = {};
+    FIELD_DEFS.forEach(f => {
+      const inp = card.querySelector(`input[data-id="${cardId}"][data-field="${f.id}"]`);
+      if (!inp) return;
+      if (f.isBool) out[f.id] = !!inp.checked;
+      else out[f.id] = inp.value;
+    });
+    return out;
+  }
+
+  // 聚合所有有变更的卡片
+  // 返回 [{cardId, siteName, siteKey, changes: [{label, oldVal, newVal}]}, ...]
+  function computeAllChanges() {
+    const groups = [];
+    configs.forEach(cfg => {
+      const current = collectCurrentValues(cfg.id);
+      if (!current) return;
+      const changes = [];
+      FIELD_DEFS.forEach(f => {
+        const oldV = cfg[f.id];
+        const newV = current[f.id];
+        // 布尔走严格 false/true 比较；字符串走 trim 后比较（避免全空格差异）
+        const eq = f.isBool
+          ? Boolean(oldV) === Boolean(newV)
+          : String(oldV == null ? '' : oldV).trim() === String(newV == null ? '' : newV).trim();
+        if (!eq) {
+          changes.push({
+            label: f.label,
+            oldVal: formatValue(f, oldV),
+            newVal: formatValue(f, newV),
+          });
+        }
       });
-      const data = await response.json();
-      if (data.success) {
-        showMessage('配置保存成功！', 'success');
-        await fetchConfigs();
-      } else {
-        showMessage(`保存失败: ${data.message}`, 'error');
+      if (changes.length > 0) {
+        groups.push({
+          cardId: cfg.id,
+          siteName: cfg.siteName || cfg.siteKey || `#${cfg.id}`,
+          siteKey: cfg.siteKey,
+          changes,
+        });
       }
-    } catch (error) {
-      showMessage(`保存请求失败: ${error.message}`, 'error');
-    } finally {
-      if (saveBtn) {
-        saveBtn.disabled = false;
-        saveBtn.textContent = '保存配置';
+    });
+    return groups;
+  }
+
+  // 格式化变更清单为确认弹窗的 message 文本
+  function formatChanges(groups) {
+    if (groups.length === 0) return '没有配置项发生变更。';
+    const lines = [`以下 ${groups.length} 个站点的配置将被修改：\n`];
+    groups.forEach((g, idx) => {
+      lines.push(`▍${idx + 1}. ${g.siteName}（${g.siteKey || '-'}）`);
+      g.changes.forEach(c => {
+        lines.push(`    • ${c.label}: ${c.oldVal}  →  ${c.newVal}`);
+      });
+      lines.push('');
+    });
+    lines.push('确认保存这些更改吗？');
+    return lines.join('\n');
+  }
+
+  // 顶部统一保存按钮的启用状态：有未保存变更时启用
+  function markDirtyState() {
+    const btn = document.getElementById('btnSaveAll');
+    if (!btn) return;
+    const dirty = computeAllChanges().length > 0;
+    btn.disabled = !dirty;
+    btn.classList.toggle('has-changes', dirty);
+  }
+
+  // 统一保存入口
+  async function saveAllConfigs() {
+    const groups = computeAllChanges();
+    if (groups.length === 0) {
+      showMessage('当前没有需要保存的变更', 'info');
+      return;
+    }
+    const ok = await window.confirmModal({
+      title: '确认保存变更',
+      message: formatChanges(groups),
+      confirmText: '保存',
+      cancelText: '取消',
+      danger: true,
+    });
+    if (!ok) return;
+
+    const btn = document.getElementById('btnSaveAll');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = '保存中...';
+    }
+    let okCount = 0;
+    let failCount = 0;
+    const failedSites = [];
+    for (const g of groups) {
+      const payload = collectCurrentValues(g.cardId);
+      try {
+        const res = await fetch(`/api/config/${g.cardId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (data.success) okCount++;
+        else { failCount++; failedSites.push(`${g.siteName}: ${data.message || '未知错误'}`); }
+      } catch (err) {
+        failCount++;
+        failedSites.push(`${g.siteName}: ${err.message}`);
       }
     }
+    // 重新拉取最新状态，刷新卡片 + 内存
+    await fetchConfigs();
+    if (btn) btn.textContent = '💾 保存所有变更';
+    if (failCount === 0) {
+      showMessage(`保存成功！共修改 ${okCount} 个站点`, 'success');
+    } else {
+      showMessage(`部分失败：成功 ${okCount}，失败 ${failCount}。${failedSites.join('；')}`, 'error');
+    }
+    // fetchConfigs 后重新计算 dirty 状态
+    markDirtyState();
   }
 
   async function deleteSite(id) {
@@ -541,6 +657,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnImportDefault) btnImportDefault.addEventListener('click', importDefaultSites);
 
   if (saveGlobalBtn) saveGlobalBtn.addEventListener('click', saveGlobalSettings);
+
+  const btnSaveAll = document.getElementById('btnSaveAll');
+  if (btnSaveAll) btnSaveAll.addEventListener('click', saveAllConfigs);
 
   if (searchInput) searchInput.addEventListener('input', applyFilter);
   if (searchClearBtn) {
