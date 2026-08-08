@@ -69,7 +69,7 @@
     "x86_64::release/run.sh": "622a77599ddd2e00e8d8b397e3b66f82",
     "x86_64::release/run.py": "524b81d562470e03226a1accc1af5a5e",
     "x86_64::release/init.sh": "ef4af201cfdca5124cb045a480c911f5",
-    "x86_64::public/config.js": "74d408ca77f6ac8d4bdbd9f8415c6738",
+    "x86_64::public/config.js": "53da972f4f1251234c446bbfe01320fb",
     "x86_64::public/index.html": "5ab48c62748b1eadb791efd3e6c7cf96",
     "x86_64::public/favicon.ico": "aed4b8eb34c47c047eb15590abb5ef3d",
     "x86_64::public/upgrade.js": "10abb9a69ebffd70f449f627990cf1ab",
@@ -95,7 +95,7 @@
     "aarch64::release/run.sh": "622a77599ddd2e00e8d8b397e3b66f82",
     "aarch64::release/run.py": "524b81d562470e03226a1accc1af5a5e",
     "aarch64::release/init.sh": "ef4af201cfdca5124cb045a480c911f5",
-    "aarch64::public/config.js": "74d408ca77f6ac8d4bdbd9f8415c6738",
+    "aarch64::public/config.js": "53da972f4f1251234c446bbfe01320fb",
     "aarch64::public/index.html": "5ab48c62748b1eadb791efd3e6c7cf96",
     "aarch64::public/favicon.ico": "aed4b8eb34c47c047eb15590abb5ef3d",
     "aarch64::public/upgrade.js": "10abb9a69ebffd70f449f627990cf1ab",
@@ -115,5 +115,5 @@
     "aarch64::public/css/modal.css": "b5b9f7fc9245d8319b793db11634e44a",
     "aarch64::public/js/modal.js": "79a7c446fa07c5ddeeff236cf7c62a52"
   },
-  "last_git_commit": "606f395ba747266a14cfadfe4a155d69897ed155"
+  "last_git_commit": "bcd74529006783c2f6c3ec45867b7b3c3289d30f"
 }

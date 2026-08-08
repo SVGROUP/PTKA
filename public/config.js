@@ -136,9 +136,10 @@ document.addEventListener('DOMContentLoaded', () => {
       card.innerHTML = `
         <div class="config-site-row">
           <div class="config-site-key">${escapeHtml(config.siteKey)}</div>
-          <span class="site-status ${config.enabled ? 'enabled' : 'disabled'}">
-            ${config.enabled ? '启用' : '禁用'}
-          </span>
+          <label class="config-checkbox site-status-checkbox" title="启用 / 禁用站点">
+            <input type="checkbox" ${config.enabled ? 'checked' : ''} data-id="${config.id}" data-field="enabled">
+            <span>启用站点</span>
+          </label>
         </div>
         <div class="config-row">
           <label class="config-label">名称</label>
@@ -147,13 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="config-row">
           <label class="config-label">URL</label>
           <input type="url" class="config-input" placeholder="例如: https://kp.m-team.cc/" value="${escapeHtml(config.siteUrl || '')}" data-id="${config.id}" data-field="siteUrl">
-        </div>
-        <hr class="config-divider">
-        <div class="config-row">
-          <label class="config-checkbox">
-            <input type="checkbox" ${config.enabled ? 'checked' : ''} data-id="${config.id}" data-field="enabled">
-            <span>启用站点</span>
-          </label>
         </div>
         <div class="config-row">
           <label class="config-label">Cookies</label>
