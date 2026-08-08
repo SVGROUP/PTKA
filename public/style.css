@@ -452,30 +452,29 @@ main {
   font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
-  background: #cbd5e0;
-  color: #718096;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
   transition: all 0.2s;
   margin-left: auto;
 }
 
 .btn-save-all.has-changes {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
-.btn-save-all.has-changes:hover:not(:disabled) {
+.btn-save-all:hover:not(:disabled) {
   background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
-.btn-save-all.has-changes:active:not(:disabled) {
+.btn-save-all:active:not(:disabled) {
   transform: translateY(0);
 }
 
 .btn-save-all:disabled {
   cursor: not-allowed;
+  opacity: 0.7;
 }
 
 /* 首页样式 */

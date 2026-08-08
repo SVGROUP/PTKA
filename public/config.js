@@ -7,6 +7,7 @@
 // 所有数据来源：/api/config/ + /api/config/settings + /api/config/import
 
 let configs = [];
+let originalConfigs = []; // 服务器初始值深拷贝，用于 diff 对比（不被用户编辑污染）
 let currentGlobal = {
   globalProxyUrl: '',
   randomLoginEnabled: false,
@@ -82,6 +83,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
       if (data.success) {
         configs = data.data || [];
+        // 深拷贝保存服务器原始值，供 computeAllChanges diff 用
+        originalConfigs = configs.map(c => ({
+          id: c.id, siteKey: c.siteKey, siteName: c.siteName, siteUrl: c.siteUrl,
+          cookies: c.cookies, userAgent: c.userAgent,
+          enabled: !!c.enabled, proxyEnabled: !!c.proxyEnabled,
+        }));
         renderConfigList();
       } else {
         showMessage('获取站点失败: ' + (data.message || ''), 'error');
@@ -253,15 +260,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 聚合所有有变更的卡片
-  // 返回 [{cardId, siteName, siteKey, changes: [{label, oldVal, newVal}]}, ...]
+  // 返回 [{cardId, siteName, changes: [{label, oldVal, newVal}]}, ...]
+  // 跟 originalConfigs（服务器初始值）对比，不跟内存中的 configs 对比
+  // （内存中的 configs 会被输入监听同步更新，永远跟 DOM 一致）
   function computeAllChanges() {
     const groups = [];
-    configs.forEach(cfg => {
-      const current = collectCurrentValues(cfg.id);
+    originalConfigs.forEach(orig => {
+      const current = collectCurrentValues(orig.id);
       if (!current) return;
+      const cfg = configs.find(c => c.id === orig.id);
+      const siteName = (cfg && cfg.siteName) || orig.siteName || orig.siteKey || `#${orig.id}`;
+      const siteKey = (cfg && cfg.siteKey) || orig.siteKey;
       const changes = [];
       FIELD_DEFS.forEach(f => {
-        const oldV = cfg[f.id];
+        const oldV = orig[f.id];
         const newV = current[f.id];
         // 布尔走严格 false/true 比较；字符串走 trim 后比较（避免全空格差异）
         const eq = f.isBool
@@ -277,9 +289,9 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       if (changes.length > 0) {
         groups.push({
-          cardId: cfg.id,
-          siteName: cfg.siteName || cfg.siteKey || `#${cfg.id}`,
-          siteKey: cfg.siteKey,
+          cardId: orig.id,
+          siteName,
+          siteKey,
           changes,
         });
       }
@@ -302,12 +314,11 @@ document.addEventListener('DOMContentLoaded', () => {
     return lines.join('\n');
   }
 
-  // 顶部统一保存按钮的启用状态：有未保存变更时启用
+  // 顶部统一保存按钮的视觉提示：有未保存变更时高亮（按钮始终可点，0 变更时点会弹 info）
   function markDirtyState() {
     const btn = document.getElementById('btnSaveAll');
     if (!btn) return;
     const dirty = computeAllChanges().length > 0;
-    btn.disabled = !dirty;
     btn.classList.toggle('has-changes', dirty);
   }
 
@@ -351,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
         failedSites.push(`${g.siteName}: ${err.message}`);
       }
     }
-    // 重新拉取最新状态，刷新卡片 + 内存
+    // 重新拉取最新状态，刷新卡片 + 内存 + originalConfigs（服务器值变为新基准）
     await fetchConfigs();
     if (btn) btn.textContent = '💾 保存所有变更';
     if (failCount === 0) {
@@ -359,8 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       showMessage(`部分失败：成功 ${okCount}，失败 ${failCount}。${failedSites.join('；')}`, 'error');
     }
-    // fetchConfigs 后重新计算 dirty 状态
-    markDirtyState();
+    // fetchConfigs 已重置 originalConfigs + 重渲卡片，无需 markDirtyState
   }
 
   async function deleteSite(id) {
