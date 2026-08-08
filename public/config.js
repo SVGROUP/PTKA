@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===================== 数据获取 =====================
 
   async function fetchConfigs() {
+    const loading = showLoading('正在同步配置…');
     try {
       const response = await fetch('/api/config/');
       const data = await response.json();
@@ -96,6 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
       console.error('获取站点失败:', error);
       showMessage('获取站点请求失败: ' + error.message, 'error');
+    } finally {
+      if (loading && loading.close) loading.close();
     }
   }
 
@@ -398,6 +401,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // 轻量 loading toast：返回 { close } 让调用者控制关闭
+  function showLoading(text) {
+    const container = document.getElementById('message-container');
+    if (!container) return { close: () => {} };
+    const toast = document.createElement('div');
+    toast.className = 'message-toast loading';
+    toast.textContent = text || '加载中…';
+    container.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 10);
+    return {
+      close() {
+        toast.classList.remove('show');
+        setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 200);
+      }
+    };
+  }
+
   // 新增站点：弹模态框，输入 siteKey + siteName + siteUrl
   async function addSiteModal() {
     // 复用 confirmModal 的遮罩/按钮/ESC，自渲染带 3 个 input 的 body
@@ -423,6 +443,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
       if (data.success) {
         showMessage(data.message || '新增成功', 'success');
+        // 重新拉取全量配置数据，确保新站点出现在列表中
+        // _inputModal 淡出动画 200ms，先等动画跑完再拉取避免 DOM 抢竞
+        await new Promise(r => setTimeout(r, 220));
         await fetchConfigs();
       } else {
         showMessage(data.message || '新增失败', 'error');
