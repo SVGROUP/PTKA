@@ -343,8 +343,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const btn = document.getElementById('btnSaveAll');
     if (btn) {
-      btn.disabled = true;
+      // 按需求「按钮不要 disable」，保存中只换文字提示，不动 disabled
+      // 防呆：保存中 cursor 变 progress 提示用户「不可重复点击」
       btn.textContent = '保存中...';
+      btn.classList.add('saving');
     }
     let okCount = 0;
     let failCount = 0;
@@ -367,7 +369,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // 重新拉取最新状态，刷新卡片 + 内存 + originalConfigs（服务器值变为新基准）
     await fetchConfigs();
-    if (btn) btn.textContent = '💾 保存所有变更';
+    if (btn) {
+      btn.textContent = '💾 保存所有变更';
+      btn.classList.remove('saving');
+    }
     if (failCount === 0) {
       showMessage(`保存成功！共修改 ${okCount} 个站点`, 'success');
     } else {

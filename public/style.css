@@ -477,6 +477,11 @@ main {
   opacity: 0.7;
 }
 
+.btn-save-all.saving {
+  cursor: progress;
+  opacity: 0.85;
+}
+
 /* 首页样式 */
 .home-content {
   background: white;
