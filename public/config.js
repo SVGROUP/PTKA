@@ -1,11 +1,12 @@
 // 站点与配置管理页面逻辑（合并自原 sites.js + config.js）
 // - 顶部：全局代理 + 随机登录
 // - 中部：搜索栏 + 站点增删改/导入工具栏
-// - 主体：每站点一张卡片，含 cookies/UA/代理启用/启停 + 站点名/URL/Key（Key 不可改）
+// - 主体：每站点一张卡片，siteKey 作抬头，siteName/siteUrl/cookies/UA/proxyEnabled 全部 inline 编辑
+// - 「保存配置」「删除」同卡同一行
+// - 批量粘贴导入走模态框（复用 js/modal.js 的遮罩/ESC/按钮）
 // 所有数据来源：/api/config/ + /api/config/settings + /api/config/import
 
 let configs = [];
-let isEditing = false;
 let currentGlobal = {
   globalProxyUrl: '',
   randomLoginEnabled: false,
@@ -28,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===================== 工具函数 =====================
 
-  // 统一消息提示
   function showMessage(message, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `message-toast ${type}`;
@@ -46,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 4000);
   }
 
-  // HTML 转义
   function escapeHtml(text) {
     if (text === null || text === undefined) return '';
     return String(text)
@@ -57,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/'/g, '&#039;');
   }
 
-  // 解析 | 文本为站点数组（用于批量导入 / 默认站点文件）
   function parsePipeText(text) {
     const lines = String(text || '').split('\n');
     const out = [];
@@ -137,19 +135,19 @@ document.addEventListener('DOMContentLoaded', () => {
       card.dataset.search = ((config.siteName || '') + ' ' + (config.siteKey || '')).toLowerCase();
       card.innerHTML = `
         <div class="config-site-row">
-          <div class="config-site-name">${escapeHtml(config.siteName || config.siteKey)}</div>
-          <div class="config-site-meta">
-            <span class="site-key">${escapeHtml(config.siteKey)}</span>
-            <span class="site-status ${config.enabled ? 'enabled' : 'disabled'}">
-              ${config.enabled ? '启用' : '禁用'}
-            </span>
-          </div>
-          <div class="config-site-actions">
-            <button class="btn btn-sm btn-secondary" data-action="edit" data-id="${config.id}">编辑名/URL</button>
-            <button class="btn btn-sm btn-danger" data-action="delete" data-id="${config.id}">删除</button>
-          </div>
+          <div class="config-site-key">${escapeHtml(config.siteKey)}</div>
+          <span class="site-status ${config.enabled ? 'enabled' : 'disabled'}">
+            ${config.enabled ? '启用' : '禁用'}
+          </span>
         </div>
-        <div class="config-site-url">${escapeHtml(config.siteUrl || '')}</div>
+        <div class="config-row">
+          <label class="config-label">名称</label>
+          <input type="text" class="config-input" placeholder="例如: M-Team" value="${escapeHtml(config.siteName || '')}" data-id="${config.id}" data-field="siteName">
+        </div>
+        <div class="config-row">
+          <label class="config-label">URL</label>
+          <input type="url" class="config-input" placeholder="例如: https://kp.m-team.cc/" value="${escapeHtml(config.siteUrl || '')}" data-id="${config.id}" data-field="siteUrl">
+        </div>
         <hr class="config-divider">
         <div class="config-row">
           <label class="config-checkbox">
@@ -171,13 +169,17 @@ document.addEventListener('DOMContentLoaded', () => {
             <span>启用代理（使用上方全局代理地址）</span>
           </label>
         </div>
-        <div class="config-row">
+        <div class="config-row config-card-actions">
           <button class="btn-save" data-id="${config.id}">保存配置</button>
+          <button class="btn-delete" data-id="${config.id}">删除</button>
         </div>
       `;
 
       const saveBtn = card.querySelector('.btn-save');
       saveBtn.addEventListener('click', () => saveConfig(config.id));
+
+      const delBtn = card.querySelector('.btn-delete');
+      delBtn.addEventListener('click', () => deleteSite(config.id));
 
       // 监听输入变化更新内存中的 config
       const inputs = card.querySelectorAll(`input[data-id="${config.id}"]`);
@@ -191,12 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
       });
-
-      // 编辑/删除按钮
-      const editBtn = card.querySelector('button[data-action="edit"]');
-      const delBtn = card.querySelector('button[data-action="delete"]');
-      if (editBtn) editBtn.addEventListener('click', () => editSite(config.id));
-      if (delBtn) delBtn.addEventListener('click', () => deleteSite(config.id));
 
       configListEl.appendChild(card);
     });
@@ -217,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (emptyEl) emptyEl.style.display = (cards.length && visible === 0) ? 'block' : 'none';
   }
 
-  // ===================== 站点保存/编辑/删除/新增 =====================
+  // ===================== 站点保存/删除/新增 =====================
 
   async function saveConfig(id) {
     const config = configs.find(c => c.id === id);
@@ -232,6 +228,8 @@ document.addEventListener('DOMContentLoaded', () => {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          siteName: config.siteName,
+          siteUrl: config.siteUrl,
           enabled: config.enabled,
           cookies: config.cookies,
           proxyEnabled: config.proxyEnabled,
@@ -253,22 +251,6 @@ document.addEventListener('DOMContentLoaded', () => {
         saveBtn.textContent = '保存配置';
       }
     }
-  }
-
-  // 打开「编辑站点」表单（编辑名/URL，Key 不可改）
-  function editSite(id) {
-    const site = configs.find(s => s.id === id);
-    if (!site) return;
-    isEditing = true;
-    document.getElementById('formTitle').textContent = `编辑站点: ${site.siteName}`;
-    document.getElementById('siteId').value = site.id;
-    document.getElementById('siteKey').value = site.siteKey;
-    document.getElementById('siteKey').disabled = true;
-    document.getElementById('siteName').value = site.siteName;
-    document.getElementById('siteUrl').value = site.siteUrl;
-    document.getElementById('formCard').style.display = 'block';
-    document.getElementById('siteName').focus();
-    document.getElementById('formCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   async function deleteSite(id) {
@@ -296,10 +278,160 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // ===================== 批量导入 / 默认站点 =====================
+  // 新增站点：弹模态框，输入 siteKey + siteName + siteUrl
+  async function addSiteModal() {
+    // 复用 confirmModal 的遮罩/按钮/ESC，自渲染带 3 个 input 的 body
+    const result = await _inputModal({
+      title: '新增站点',
+      fields: [
+        { name: 'siteKey', label: '站点标识', placeholder: '例如: mteam', required: true,
+          hint: '唯一标识，仅支持字母数字，创建后不可修改' },
+        { name: 'siteName', label: '站点名称', placeholder: '例如: M-Team', required: true },
+        { name: 'siteUrl', label: '站点 URL', placeholder: '例如: https://kp.m-team.cc/', required: true, type: 'url' },
+      ],
+      confirmText: '保存',
+      cancelText: '取消',
+    });
+    if (!result) return;
+    const { siteKey, siteName, siteUrl } = result;
+    try {
+      const res = await fetch('/api/config/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ siteKey, siteName, siteUrl }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showMessage(data.message || '新增成功', 'success');
+        await fetchConfigs();
+      } else {
+        showMessage(data.message || '新增失败', 'error');
+      }
+    } catch (err) {
+      showMessage('新增失败: ' + err.message, 'error');
+    }
+  }
 
-  async function postImport(sites, successHint) {
-    if (!sites || sites.length === 0) {
+  // 通用输入模态框：仿 promptModal 但支持多个字段
+  // 返回 Promise<{ [name]: value } | null>，null 表示取消
+  function _inputModal({ title, fields, confirmText, cancelText }) {
+    return new Promise((resolve) => {
+      let root = document.getElementById('__ptka_modal_root__');
+      if (!root) {
+        root = document.createElement('div');
+        root.id = '__ptka_modal_root__';
+        document.body.appendChild(root);
+      }
+      const overlay = document.createElement('div');
+      overlay.className = 'modal-overlay';
+      overlay.setAttribute('role', 'alertdialog');
+      overlay.setAttribute('aria-modal', 'true');
+      if (title) overlay.setAttribute('aria-label', title);
+
+      const esc = (s) => String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+
+      const fieldsHtml = fields.map(f => `
+        <div class="modal-field">
+          <label class="modal-field-label">${esc(f.label)}${f.required ? ' <span class="modal-field-req">*</span>' : ''}</label>
+          <input type="${esc(f.type || 'text')}" class="modal-input" name="${esc(f.name)}" placeholder="${esc(f.placeholder || '')}" ${f.required ? 'required' : ''}>
+          ${f.hint ? `<div class="modal-field-hint">${esc(f.hint)}</div>` : ''}
+        </div>
+      `).join('');
+
+      overlay.innerHTML = `
+        <div class="modal-card" role="document">
+          <div class="modal-header">
+            <div class="modal-icon" aria-hidden="true">+</div>
+            <div class="modal-title">${esc(title || '输入')}</div>
+          </div>
+          <div class="modal-body">${fieldsHtml}</div>
+          <div class="modal-footer">
+            <button class="modal-btn modal-btn-cancel" data-act="cancel" type="button">${esc(cancelText || '取消')}</button>
+            <button class="modal-btn modal-btn-confirm" data-act="confirm" type="button">${esc(confirmText || '确定')}</button>
+          </div>
+        </div>
+      `;
+
+      root.appendChild(overlay);
+      const prevFocus = document.activeElement;
+
+      function close(value) {
+        overlay.classList.remove('modal-show');
+        setTimeout(() => {
+          if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+          if (prevFocus && typeof prevFocus.focus === 'function') {
+            try { prevFocus.focus(); } catch (_) {}
+          }
+        }, 200);
+        resolve(value);
+      }
+
+      overlay.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-act]');
+        if (btn) {
+          if (btn.dataset.act === 'confirm') {
+            const inputs = overlay.querySelectorAll('input.modal-input');
+            const out = {};
+            for (const inp of inputs) {
+              out[inp.name] = inp.value.trim();
+            }
+            // 必填校验
+            for (const f of fields) {
+              if (f.required && !out[f.name]) {
+                showMessage(`${f.label}不能为空`, 'error');
+                const inp = overlay.querySelector(`input[name="${f.name}"]`);
+                if (inp) { try { inp.focus(); } catch (_) {} }
+                return;
+              }
+            }
+            close(out);
+          } else {
+            close(null);
+          }
+          return;
+        }
+        if (e.target === overlay) close(null); // 点遮罩取消
+      });
+
+      overlay.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          close(null);
+        } else if (e.key === 'Enter') {
+          // 在 input 中按 Enter = 确认
+          const tag = (document.activeElement && document.activeElement.tagName) || '';
+          if (tag === 'INPUT') {
+            e.preventDefault();
+            overlay.querySelector('button[data-act="confirm"]').click();
+          }
+        }
+      });
+
+      // 显示动画 + 焦点落到第一个 input
+      requestAnimationFrame(() => overlay.classList.add('modal-show'));
+      setTimeout(() => {
+        const first = overlay.querySelector('input.modal-input');
+        if (first) { try { first.focus(); } catch (_) {} }
+      }, 30);
+    });
+  }
+
+  // 批量粘贴导入模态框
+  async function batchImportModal() {
+    const result = await _inputModal({
+      title: '批量导入站点',
+      fields: [
+        { name: 'sitesText', label: '站点列表', placeholder: '每行一个: site_key|site_name|site_url', required: true,
+          hint: '每行格式: site_key|site_name|site_url（# 开头视为注释）' },
+      ],
+      confirmText: '开始导入',
+      cancelText: '取消',
+    });
+    if (!result) return;
+    const sites = parsePipeText(result.sitesText);
+    if (sites.length === 0) {
       showMessage('没有解析到有效的站点数据', 'error');
       return;
     }
@@ -318,9 +450,45 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const data = await res.json();
       if (data.success) {
-        showMessage(data.message || successHint, 'success');
-        const ta = document.getElementById('batchImportText');
-        if (ta) ta.value = '';
+        showMessage(data.message || '批量导入完成', 'success');
+        await fetchConfigs();
+      } else {
+        showMessage(data.message || '导入失败', 'error');
+      }
+    } catch (err) {
+      showMessage('导入失败: ' + err.message, 'error');
+    }
+  }
+
+  // 导入默认站点
+  async function importDefaultSites() {
+    const ok = await window.confirmModal({
+      title: '导入默认站点',
+      message: '确定要导入默认站点列表吗？会添加所有预设的PT站点，已存在的会被跳过。',
+      confirmText: '导入',
+      cancelText: '取消',
+    });
+    if (!ok) return;
+    try {
+      const res = await fetch('default_sites.txt');
+      if (!res.ok) {
+        showMessage('获取默认站点文件失败: HTTP ' + res.status, 'error');
+        return;
+      }
+      const text = await res.text();
+      const sites = parsePipeText(text);
+      if (sites.length === 0) {
+        showMessage('默认站点列表为空', 'error');
+        return;
+      }
+      const importRes = await fetch('/api/config/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sites }),
+      });
+      const data = await importRes.json();
+      if (data.success) {
+        showMessage(data.message || '默认站点导入完成', 'success');
         await fetchConfigs();
       } else {
         showMessage(data.message || '导入失败', 'error');
@@ -369,136 +537,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===================== 事件绑定 =====================
 
-  // 新增站点
   const btnAddSite = document.getElementById('btnAddSite');
-  if (btnAddSite) {
-    btnAddSite.addEventListener('click', () => {
-      isEditing = false;
-      document.getElementById('formTitle').textContent = '新增站点';
-      document.getElementById('siteForm').reset();
-      document.getElementById('siteId').value = '';
-      document.getElementById('siteKey').disabled = false;
-      document.getElementById('formCard').style.display = 'block';
-      document.getElementById('siteKey').focus();
-    });
-  }
+  if (btnAddSite) btnAddSite.addEventListener('click', addSiteModal);
 
-  // 取消新增/编辑
-  const btnCancel = document.getElementById('btnCancel');
-  if (btnCancel) {
-    btnCancel.addEventListener('click', () => {
-      document.getElementById('formCard').style.display = 'none';
-    });
-  }
-
-  // 新增/编辑表单提交
-  const siteForm = document.getElementById('siteForm');
-  if (siteForm) {
-    siteForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const siteId = document.getElementById('siteId').value;
-      const siteKey = document.getElementById('siteKey').value.trim();
-      const siteName = document.getElementById('siteName').value.trim();
-      const siteUrl = document.getElementById('siteUrl').value.trim();
-      try {
-        let res;
-        if (isEditing && siteId) {
-          res = await fetch(`/api/config/${siteId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ siteName, siteUrl }),
-          });
-        } else {
-          res = await fetch('/api/config/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ siteKey, siteName, siteUrl }),
-          });
-        }
-        const data = await res.json();
-        if (data.success) {
-          showMessage(data.message || '保存成功', 'success');
-          document.getElementById('formCard').style.display = 'none';
-          await fetchConfigs();
-        } else {
-          showMessage(data.message || '操作失败', 'error');
-        }
-      } catch (err) {
-        showMessage('操作失败: ' + err.message, 'error');
-      }
-    });
-  }
-
-  // 批量粘贴导入（展开/收起）
-  const btnBatchImportToggle = document.getElementById('btnBatchImportToggle');
-  const batchImportCard = document.getElementById('batchImportCard');
-  if (btnBatchImportToggle && batchImportCard) {
-    btnBatchImportToggle.addEventListener('click', () => {
-      const isOpen = batchImportCard.style.display !== 'none';
-      batchImportCard.style.display = isOpen ? 'none' : 'block';
-      btnBatchImportToggle.textContent = isOpen ? '批量粘贴导入' : '收起批量导入';
-      if (!isOpen) {
-        const ta = document.getElementById('batchImportText');
-        if (ta) ta.focus();
-      }
-    });
-  }
-  const btnBatchImportClose = document.getElementById('btnBatchImportClose');
-  if (btnBatchImportClose && batchImportCard && btnBatchImportToggle) {
-    btnBatchImportClose.addEventListener('click', () => {
-      batchImportCard.style.display = 'none';
-      btnBatchImportToggle.textContent = '批量粘贴导入';
-    });
-  }
   const btnBatchImport = document.getElementById('btnBatchImport');
-  if (btnBatchImport) {
-    btnBatchImport.addEventListener('click', async () => {
-      const text = document.getElementById('batchImportText').value;
-      const sites = parsePipeText(text);
-      await postImport(sites, '批量导入完成');
-    });
-  }
+  if (btnBatchImport) btnBatchImport.addEventListener('click', batchImportModal);
 
-  // 导入默认站点
   const btnImportDefault = document.getElementById('btnImportDefault');
-  if (btnImportDefault) {
-    btnImportDefault.addEventListener('click', async () => {
-      const ok = await window.confirmModal({
-        title: '导入默认站点',
-        message: '确定要导入默认站点列表吗？会添加所有预设的PT站点，已存在的会被跳过。',
-        confirmText: '导入',
-        cancelText: '取消',
-      });
-      if (!ok) return;
-      try {
-        const res = await fetch('default_sites.txt');
-        if (!res.ok) {
-          showMessage('获取默认站点文件失败: HTTP ' + res.status, 'error');
-          return;
-        }
-        const text = await res.text();
-        const sites = parsePipeText(text);
-        if (sites.length === 0) {
-          showMessage('默认站点列表为空', 'error');
-          return;
-        }
-        const importRes = await fetch('/api/config/import', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sites }),
-        });
-        const data = await importRes.json();
-        if (data.success) {
-          showMessage(data.message || '默认站点导入完成', 'success');
-          await fetchConfigs();
-        } else {
-          showMessage(data.message || '导入失败', 'error');
-        }
-      } catch (err) {
-        showMessage('导入失败: ' + err.message, 'error');
-      }
-    });
-  }
+  if (btnImportDefault) btnImportDefault.addEventListener('click', importDefaultSites);
 
   if (saveGlobalBtn) saveGlobalBtn.addEventListener('click', saveGlobalSettings);
 

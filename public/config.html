@@ -58,47 +58,8 @@
           <!-- 站点管理工具栏 -->
           <div class="action-bar config-action-bar">
             <button class="btn btn-primary" id="btnAddSite">+ 新增站点</button>
+            <button class="btn btn-secondary" id="btnBatchImport">批量粘贴导入</button>
             <button class="btn btn-secondary" id="btnImportDefault">导入默认站点</button>
-            <button class="btn btn-secondary" id="btnBatchImportToggle">批量粘贴导入</button>
-          </div>
-
-          <!-- 新增/编辑站点表单（默认隐藏） -->
-          <div class="card" id="formCard" style="display: none;">
-            <h3 id="formTitle">新增站点</h3>
-            <form id="siteForm">
-              <input type="hidden" id="siteId">
-              <div class="form-group">
-                <label for="siteKey">站点标识</label>
-                <input type="text" id="siteKey" placeholder="例如: mteam" required>
-                <small>唯一标识，仅支持字母数字，创建后不可修改</small>
-              </div>
-              <div class="form-group">
-                <label for="siteName">站点名称</label>
-                <input type="text" id="siteName" placeholder="例如: M-Team" required>
-              </div>
-              <div class="form-group">
-                <label for="siteUrl">站点 URL</label>
-                <input type="url" id="siteUrl" placeholder="例如: https://kp.m-team.cc/" required>
-              </div>
-              <div class="form-actions">
-                <button type="button" class="btn btn-secondary" id="btnCancel">取消</button>
-                <button type="submit" class="btn btn-primary">保存</button>
-              </div>
-            </form>
-          </div>
-
-          <!-- 批量导入（默认隐藏） -->
-          <div class="card" id="batchImportCard" style="display: none;">
-            <h3>批量导入</h3>
-            <p>粘贴站点列表，每行格式：<code>site_key|site_name|site_url</code></p>
-            <textarea id="batchImportText" rows="10" placeholder="例如:
-mteam|M-Team|https://kp.m-team.cc/
-chdbits|CHDBits|https://ptchdbits.co/
-..."></textarea>
-            <div class="form-actions">
-              <button class="btn btn-primary" id="btnBatchImport">开始导入</button>
-              <button type="button" class="btn btn-secondary" id="btnBatchImportClose">收起</button>
-            </div>
           </div>
 
           <!-- 站点列表 -->
