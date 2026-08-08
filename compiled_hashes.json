@@ -76,7 +76,7 @@
     "x86_64::public/config.html": "2119c5e9cf312a8b69fee223fce28c9f",
     "x86_64::public/status.html": "c32b520afd9757da5b35461349cae2fd",
     "x86_64::public/upgrade.html": "1c7740a48e6032ef37fc29dfe80c380d",
-    "x86_64::public/style.css": "8ffd390011d93771c2958dfb140deef7",
+    "x86_64::public/style.css": "bce259461f75933f046f4d972b70ba81",
     "x86_64::public/status.js": "aefbc28dded111375b0603d4a8934f49",
     "x86_64::commit_file/commit.sh": "f3ece85990e45c3765bf1b7294e8b1d0",
     "x86_64::commit_file/update.sh": "6c0926711dd9a112d159653372e8a6da",
@@ -102,7 +102,7 @@
     "aarch64::public/config.html": "2119c5e9cf312a8b69fee223fce28c9f",
     "aarch64::public/status.html": "c32b520afd9757da5b35461349cae2fd",
     "aarch64::public/upgrade.html": "1c7740a48e6032ef37fc29dfe80c380d",
-    "aarch64::public/style.css": "8ffd390011d93771c2958dfb140deef7",
+    "aarch64::public/style.css": "bce259461f75933f046f4d972b70ba81",
     "aarch64::public/status.js": "aefbc28dded111375b0603d4a8934f49",
     "aarch64::commit_file/commit.sh": "f3ece85990e45c3765bf1b7294e8b1d0",
     "aarch64::commit_file/update.sh": "6c0926711dd9a112d159653372e8a6da",
@@ -115,5 +115,5 @@
     "aarch64::public/css/modal.css": "b5b9f7fc9245d8319b793db11634e44a",
     "aarch64::public/js/modal.js": "79a7c446fa07c5ddeeff236cf7c62a52"
   },
-  "last_git_commit": "bcd74529006783c2f6c3ec45867b7b3c3289d30f"
+  "last_git_commit": "2373d06a6a651536759ec901606e2ef71aaa7b2b"
 }

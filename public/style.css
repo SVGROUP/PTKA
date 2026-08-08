@@ -412,6 +412,39 @@ main {
   cursor: not-allowed;
 }
 
+.btn-delete {
+  padding: 6px 16px;
+  border: 1px solid #fc8181;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: white;
+  color: #c53030;
+  transition: all 0.2s;
+}
+
+.btn-delete:hover:not(:disabled) {
+  background: #fff5f5;
+  border-color: #c53030;
+  transform: translateY(-1px);
+}
+
+.btn-delete:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-delete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.config-card-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 /* 首页样式 */
 .home-content {
   background: white;
