@@ -88,8 +88,20 @@ document.addEventListener('DOMContentLoaded', () => {
       let actions = '';
       if (deleteMode) {
         actions = `<button class="btn btn-danger btn-sm btn-remove" data-container="${escapeHtml(item.containerName)}">移除</button>`;
-      } else if (!handled) {
-        actions = `<button class="btn btn-primary btn-sm btn-upgrade" data-container="${escapeHtml(item.containerName)}">升级</button>`;
+      } else {
+        // 升级按钮仅在「待升级」且未开启「自动升级」时显示:
+        // - handled=1 已有「已升级」角标,不重复按钮
+        // - autoUpgrade=1 情况下本轮发现新版本会自动触发,人在页面手动点没有意义,
+        //   也不应该拦截(人是备用,不是默认)。所以默认隐藏「升级」按钮让人看「自动」状态。
+        const autoOn = !!item.autoUpgrade;
+        if (!handled && !autoOn) {
+          actions = `<button class="btn btn-primary btn-sm btn-upgrade" data-container="${escapeHtml(item.containerName)}">升级</button>`;
+        }
+        // 自动升级 toggle:只对「未升级」启用(已升级的镜像不再需要 toggle)
+        // 已开:autoUp=1时显示「自动开」文字,点击可关闭;默认状态可点开启
+        const toggleLabel = autoOn ? '⏵ 自动升级中 (点关闭)' : '⏵ 开启自动升级';
+        const toggleClass = autoOn ? 'btn btn-warning btn-sm btn-auto-toggle active' : 'btn btn-outline btn-sm btn-auto-toggle';
+        actions = `<button class="${toggleClass}" data-container="${escapeHtml(item.containerName)}" data-enabled="${autoOn ? '1' : '0'}" title="开启后,推送新镜像时自动拉取并重建容器。失败仅告警,不重试。">${escapeHtml(toggleLabel)}</button>` + actions;
       }
       return `
         <div class="site-item${deleteMode ? ' delete-mode' : ''}">
@@ -109,6 +121,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     container.querySelectorAll('.btn-remove').forEach(btn => {
       btn.addEventListener('click', () => doRemove(btn.dataset.container));
+    });
+    container.querySelectorAll('.btn-auto-toggle').forEach(btn => {
+      btn.addEventListener('click', () => doAutoToggle(btn.dataset.container, btn.dataset.enabled === '1', btn));
     });
   }
 
@@ -195,6 +210,40 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {
       showMessage('移除失败: ' + e.message, 'error');
     } finally {
+      loadList();
+    }
+  }
+
+  async function doAutoToggle(name, currentEnabled, btn) {
+    // 开启时弹确认(防止误点),关闭不弹(幂等操作)
+    if (!currentEnabled) {
+      const ok = await window.confirmModal({
+        title: '开启自动升级',
+        message: `开启后镜像 "${name}" 出现新版本时会【立即】拉取并重建容器。\n\n失败仅推送告警、不重试，运营问题由人负责。\n\n确认开启？`,
+        confirmText: '开启',
+        cancelText: '取消',
+        danger: true,
+      });
+      if (!ok) return;
+    }
+    btn.disabled = true;
+    const nextEnabled = !currentEnabled;
+    try {
+      const res = await fetch('/api/upgrade/auto-toggle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ container: name, enabled: nextEnabled })
+      });
+      const json = await res.json();
+      if (json.success) {
+        showMessage(json.message || (nextEnabled ? '已开启自动升级' : '已关闭'), 'success');
+      } else {
+        showMessage(json.message || '设置失败', 'error');
+      }
+    } catch (e) {
+      showMessage('请求失败: ' + e.message, 'error');
+    } finally {
+      btn.disabled = false;
       loadList();
     }
   }
