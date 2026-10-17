@@ -110,10 +110,10 @@
     "aarch64::./pt_keepalive/upgrade_checker.py": "5ec97931e0f4c404310468af51f17eb7",
     "x86_64::./pt_keepalive/notifier.py": "c4a29273b5fa79884ff9b07da8d200bd",
     "aarch64::./pt_keepalive/notifier.py": "c4a29273b5fa79884ff9b07da8d200bd",
-    "x86_64::public/css/modal.css": "b5b9f7fc9245d8319b793db11634e44a",
     "x86_64::public/js/modal.js": "79a7c446fa07c5ddeeff236cf7c62a52",
-    "aarch64::public/css/modal.css": "b5b9f7fc9245d8319b793db11634e44a",
-    "aarch64::public/js/modal.js": "79a7c446fa07c5ddeeff236cf7c62a52"
+    "x86_64::public/css/modal.css": "b5b9f7fc9245d8319b793db11634e44a",
+    "aarch64::public/js/modal.js": "79a7c446fa07c5ddeeff236cf7c62a52",
+    "aarch64::public/css/modal.css": "b5b9f7fc9245d8319b793db11634e44a"
   },
-  "last_git_commit": "eec4fce49192f009cfe0ecf93cebacb8743ecf93"
+  "last_git_commit": "846e6c45265d84be68df4da2393e896c5825e5cd"
 }
